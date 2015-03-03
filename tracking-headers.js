@@ -14,10 +14,10 @@
 			nowTrackingHeaderIndex = null;
 			$this.find('h1, h2, h3, h4, h5, h6').each(function() {
 				var $header = $(this);
-				var headerPosition = $header.position();
-				var hpt = headerPosition.top;
+				var headerPosition = $header.offset();
+				var hpt = headerPosition.top - parseInt($header.css('margin-top'));
 				headerDefaultPositions.push(hpt);
-				headerHeights.push($header.outerHeight());
+				headerHeights.push($header.outerHeight(true));
 				$header.css({
 					position: 'relative'
 				});
@@ -31,13 +31,14 @@
 
 			$this.find('h1, h2, h3, h4, h5, h6').each(function(i) {
 				var $header = $(this);
-				var headerPosition = $header.position();
-				var hpt = headerPosition.top;
-				if ((headerDefaultPositions[i] < st && headerDefaultPositions[i + 1] > st && nowTrackingHeaderIndex != i) || (i + 1 == headerDefaultPositions.length && headerDefaultPositions[i] < st && nowTrackingHeaderIndex != i)) {
+				if ((headerDefaultPositions[i] < st && headerDefaultPositions[i + 1] > st && nowTrackingHeaderIndex != i) ||
+				(i + 1 == headerDefaultPositions.length && headerDefaultPositions[i] < st && nowTrackingHeaderIndex != i)) {
 					$nowTrackingHeader = $header;
 					nowTrackingHeaderIndex = i;
 					$header.before($('<div class="jquery-trackingheaders-dammy">').css({
-						height: $header.outerHeight() + 'px'
+						height: $header.outerHeight() + 'px',
+						'margin-top': $header.css('margin-top'),
+						'margin-bottom': $header.css('margin-bottom')
 					}));
 					$header.css({
 						position: 'fixed',
@@ -51,13 +52,20 @@
 				}
 			});
 
-			var headerPosition = $nowTrackingHeader.position();
-			var hpt = headerPosition.top;
-			var hh = $nowTrackingHeader.outerHeight();
+			var hh = $nowTrackingHeader.outerHeight(true);
 
 			$nowTrackingHeader.css({
 				top: 0
 			});
+
+			if (nowTrackingHeaderIndex == 0) {
+				if (headerDefaultPositions[0] > st) {
+					var t = headerDefaultPositions[0] - st;
+					$nowTrackingHeader.css({
+						top: t
+					});
+				}
+			}
 
 			if (headerDefaultPositions.length > nowTrackingHeaderIndex) {
 				if (headerDefaultPositions[nowTrackingHeaderIndex + 1] <= st + hh) {
