@@ -33,11 +33,10 @@
 				var $header = $(this);
 				var headerPosition = $header.position();
 				var hpt = headerPosition.top;
-				if (headerDefaultPositions[i] < st && headerDefaultPositions[i + 1] > st && nowTrackingHeaderIndex != i) {
+				if ((headerDefaultPositions[i] < st && headerDefaultPositions[i + 1] > st && nowTrackingHeaderIndex != i) || (i + 1 == headerDefaultPositions.length && headerDefaultPositions[i] < st && nowTrackingHeaderIndex != i)) {
 					$nowTrackingHeader = $header;
 					nowTrackingHeaderIndex = i;
 					$header.before($('<div class="jquery-trackingheaders-dammy">').css({
-						background: 'blue',
 						height: $header.outerHeight() + 'px'
 					}));
 					$header.css({
@@ -60,11 +59,13 @@
 				top: 0
 			});
 
-			if (headerDefaultPositions[nowTrackingHeaderIndex + 1] <= st + hh) {
-				var t = headerDefaultPositions[nowTrackingHeaderIndex + 1] - (st + hh);
-				$nowTrackingHeader.css({
-					top: t
-				});
+			if (headerDefaultPositions.length > nowTrackingHeaderIndex) {
+				if (headerDefaultPositions[nowTrackingHeaderIndex + 1] <= st + hh) {
+					var t = headerDefaultPositions[nowTrackingHeaderIndex + 1] - (st + hh);
+					$nowTrackingHeader.css({
+						top: t
+					});
+				}
 			}
 
 			if (headerDefaultPositions[nowTrackingHeaderIndex - 1] + headerHeights[nowTrackingHeaderIndex - 1] >= st) {
